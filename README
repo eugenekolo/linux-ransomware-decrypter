@@ -1,42 +1,28 @@
+# Bitdefender's Linux Ransomware (Linux.Encoder.1) Decrypter
+
+More Info: http://labs.bitdefender.com/2015/11/linux-ransomware-debut-fails-on-predictable-encryption-key/
+
+## How to
 Steps:
-
-1) Hopefully you have NOT deleted any encrypted files
-
-2) Run sort_files.sh / > sorted.list to obtain a list of the encrypted files sorted by encryption time
+1. Hopefully you have NOT deleted any encrypted files
+2. Run sort_files.sh / > sorted.list to obtain a list of the encrypted files sorted by encryption time
 	* Note: run sort_files.sh /path/to/vm/partition if the data was on a vm
-
-3) Most importantly, obtain the first file in that list, be it X.encrypted (head -1 sorted.list)
-
-4) Find the seed using ./decrypter.py -f /path/to/X.encrypted
-
-5) If you have the seed you can safely decrypt the files. Run ./decrypter.py -s <seed> -l <sorted.list> -e <error.list>
-
-6) Check decryption was correct and clean the ".encrypted" files on your own.
+3. Most importantly, obtain the first file in that list, be it X.encrypted (head -1 sorted.list)
+4. Find the seed using ./decrypter.py -f /path/to/X.encrypted
+5. If you have the seed you can safely decrypt the files. Run ./decrypter.py -s <seed> -l <sorted.list> -e <error.list>
+6. Check decryption was correct and clean the ".encrypted" files on your own.
 	* Note: Unfortunately, the ransomware does not preserve ownership (user/group), some things might get broken because of this.
+7. If you have files still encrypted they will appear in the file you provided as <error.list>. You will need to redo steps 3) -> 6) using the <error.list> until no more files.
 
-7) If you have files still encrypted they will appear in the file you provided as <error.list>. You will need to redo steps 3) -> 6) using the <error.list> until no more files.
-
-
-
-
-
-
-Example run:
-	
-2)
-# bash decrypter/sort_files.sh  > sorted_list
-
-3)
-# head -1 sorted_list
-1447255617.0000000000 ./d/home/user/.bash_logout.encrypted
-
-4)
-python decrypter/decrypter.py -f ./d/home/user/.bash_logout.encrypted
-[*] Seed: 1447255617
-
-5)
-python decrypter/decrypter.py -s 1447255617 -l sorted_list -e error_list
-
+## Example
+     ```
+     bash decrypter/sort_files.sh  > sorted_list
+     head -1 sorted_list
+     python decrypter/decrypter.py -f ./d/home/user/.bash_logout.encrypted
+     $> [*] Seed: 1447255617
+     python decrypter/decrypter.py -s 1447255617 -l sorted_list -e error_list
+     ```
+     
 .........
 [FAILED] ./d/usr/share/doc/mlocate/README.encrypted
 [OK] ./d/usr/share/doc/mlocate/TODO.Debian.encrypted
@@ -47,9 +33,6 @@ python decrypter/decrypter.py -s 1447255617 -l sorted_list -e error_list
 [*] recovered 7572 files
 [*] failed to recover (probably bad seed) 9424 files
 [*] 36 corrupted (probably truncated) files
-
-
-
 
 6) => 3) (because 9424 files still encrypted)
 
@@ -104,7 +87,6 @@ python decrypter/decrypter.py -s 1447255617 -l sorted_list -e error_list
 [*] recovered 4424 files
 [*] failed to recover (probably bad seed) 0 files
 [*] 0 corrupted (probably truncated) files
-
 
 
 DONE!
